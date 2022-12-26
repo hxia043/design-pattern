@@ -1,16 +1,10 @@
 package main
 
 import (
+	"eager/log"
 	"fmt"
-	"time"
 )
 
-var log *logger = &logger{Timestamp: time.Now()}
-
-type logger struct {
-	Timestamp time.Time
-}
-
 func main() {
-	fmt.Println(log.Timestamp)
+	fmt.Println(log.Logger.Timestamp)
 }

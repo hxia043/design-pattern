@@ -1,16 +1,15 @@
-package main
+package log
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
 
-var log *logger
+var Log *logger
 var mu sync.Mutex
 
 type logger struct {
-	timestamp time.Time
+	Timestamp time.Time
 }
 
 func NewLogger(log *logger) *logger {
@@ -19,15 +18,10 @@ func NewLogger(log *logger) *logger {
 		defer mu.Unlock()
 
 		if log == nil {
-			log = &logger{timestamp: time.Now()}
+			log = &logger{Timestamp: time.Now()}
 			return log
 		}
 	}
 
 	return log
-}
-
-func main() {
-	logger := NewLogger(log)
-	fmt.Println(logger.timestamp)
 }

@@ -2,31 +2,13 @@ package main
 
 import (
 	"fmt"
+	"once/log"
 	"os"
 	"sync"
 	"time"
 )
 
-var oncelogger sync.Once
 var onceenv sync.Once
-
-var log *logger
-
-type logger struct {
-	timestamp time.Time
-}
-
-func NewLogger() *logger {
-	if log == nil {
-		oncelogger.Do(func() {
-			log = &logger{timestamp: time.Now()}
-		})
-
-		return log
-	}
-
-	return log
-}
 
 func getEnv() {
 	if os.Getenv("TEST") == "" {
@@ -41,8 +23,8 @@ func getEnv() {
 }
 
 func main() {
-	l := NewLogger()
-	fmt.Println(l.timestamp.UTC())
+	l := log.NewLogger()
+	fmt.Println(l.Timestamp.UTC())
 
 	for i := 0; i < 10; i++ {
 		go getEnv()
