@@ -374,24 +374,24 @@ type villaBuilder struct {
     drink int
 }
 
-func (hb villaBuilder) createIcer(icer int) Builder {
-    hb.house.icer = icer
-    return hb
+func (vb villaBuilder) createIcer() Builder {
+    vb.house.icer = vb.icer
+    return vb
 }
 
-func (hb villaBuilder) createDrink(drink int) Builder {
-    hb.house.drink = drink
-    return hb
+func (vb villaBuilder) createDrink() Builder {
+    vb.house.drink = vb.drink
+    return vb
 }
 
-func (hb villaBuilder) setIcer(icer int) Builder {
-    hb.icer = icer
-    return hb
+func (vb villaBuilder) setIcer(icer int) Builder {
+    vb.icer = icer
+    return vb
 }
 
-func (hb villaBuilder) setDrink(drink int) Builder {
-    hb.drink = drink
-    return hb
+func (vb villaBuilder) setDrink(drink int) Builder {
+    vb.drink = drink
+    return vb
 }
 ```
 
