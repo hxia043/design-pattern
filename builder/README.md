@@ -6,7 +6,7 @@
 
 ## 1.1 从工厂函数说起
 
-试想要构建房子类，其属性如下：
+试想构建房子类，其属性如下：
 ```
 type house struct {
 	window   int
@@ -19,7 +19,7 @@ type house struct {
 
 其中，`door`, `window` 和 `bed` 是必须配置，`desk` 和 `deskLamp` 是可选配置，且 `desk` 和 `deskLamp` 是配套配置。
 
-通过工厂函数创建 `house` 对象如下：
+通过工厂函数创建 `house` 对象：
 ```
 func NewHouse(window, door, bed, desk, deskLamp int) *house {
 	return &house{
@@ -32,7 +32,7 @@ func NewHouse(window, door, bed, desk, deskLamp int) *house {
 }
 ```
 
-这里有个问题在于 `desk` 和 `deskLamp` 是可选配置。通过 `NewHouse` 创建对象需要指定 `desk` 和 `deskLamp` 如下：
+这里有个问题在于 `desk` 和 `deskLamp` 是可选配置。通过 `NewHouse` 创建对象需要指定 `desk` 和 `deskLamp`：
 ```
 house := NewHouse(2, 1, 1, 0, 0)
 ```
@@ -40,7 +40,7 @@ house := NewHouse(2, 1, 1, 0, 0)
 这对调用者来说不必要。
 
 
-继续，使用 `set` 结合工厂函数构造 `house` 对象如下：
+继续，使用 `set` 结合工厂函数构造 `house` 对象：
 ```
 func NewHouse(window, door, bed int) *house {
     return &house{
@@ -59,7 +59,7 @@ func (h *house) SetDeskLamp(deskLamp int) {
 }
 ```
 
-创建 house 对象如下：
+创建 `house` 对象：
 ```
 house := NewHouse(2, 1, 1)
 
@@ -70,7 +70,7 @@ house.SetDeskLamp(1)
 
 看起来还不错。
 
-**不过 `desk` 和 `deskLamp` 要配套出现，这里并没有检查配套的逻辑。并且，`window`, `door` 和 `bed` 需要检测，如果传入的是 0 或 负数，应该要报错。**
+不过 `desk` 和 `deskLamp` 要配套出现，这里并没有检查配套的逻辑。并且，`window`, `door` 和 `bed` 需要检测，如果传入的是 0 或 负数，应该要报错。
 
 
 结合这两点，继续构建 `house` 对象。构建有两种思路：思路一，在构造完的 `house` 对象上添加 `validation` 方法校验属性。思路二，在工厂函数内校验必配属性，新建方法检查 `desk` 和 `deskLamp` 是否配套出现。
@@ -132,6 +132,7 @@ house, _ := NewHouse().SetRequisite(2, 1, 1).SetDesk(1).SetDeskLamp(1).Validatio
 ```
 
 嗯，看起来清晰了不少。不过我们细细分析下逻辑的话还是会发现那么一点怪异的点。这一点在于，`house` 对象是 `set` 的主体，这在逻辑上好像不通。  
+
 是的，我们需要引入一个新对象叫 `Builder` 来创建 `house`，而不是让 `house` 自己创建自己。
 
 改造代码如下：  
@@ -186,12 +187,12 @@ func (b *Builder) build() (*house, error) {
 
 对于调用方，创建对象就变成了：
 ```
-house, err := NewBuilder().SetRequisite(2, 1, 1).SetDesk(1).SetDeskLamp(1).build()
+house, _ := NewBuilder().SetRequisite(2, 1, 1).SetDesk(1).SetDeskLamp(1).build()
 ```
 
 这里 `desk` 和 `deskLamp` 是配套使用的，如果不需要的话。创建对象就变成：
 ```
-house, err := NewBuilder().SetRequisite(2, 1, 1).build()
+house, _ := NewBuilder().SetRequisite(2, 1, 1).build()
 ```
 
 要留意这种结构，它是顺序不一致的。  
@@ -353,13 +354,13 @@ func NewBuilder(typ string) Builder {
 house, err := NewBuilder("house", 2, 2, 2).build()
 ```
 
-这里做大的改变在于 `Builder` 对象中新增可配置属性 `window`, `door` 和 `chair`。通过 `Builer` 内的属性将参数传给内嵌产品对象，实现有序创建。
+这里最大的改变在于 `Builder` 对象中新增可配置属性 `window`, `door` 和 `chair`。通过 `Builer` 内的属性将参数传给内嵌产品对象，实现有序创建。
 
 参数可配带来的问题在于，可以整合 `villaBuilder` 和 `residenceBuilder` 为一个 `Builder`。通过该 `Builder` 实现根据不同配置创建 `house`。
-那就蜕化为前面的示例 1.1 的实现了。
+那就蜕化为前面的 *示例 1.1* 的实现了。
 
 
-试想，这时候在新增冰箱和饮料两个属性，且这两个属性是可选的，配套的。那么怎么创建 `house` 和 `car` 呢？会不会工厂函数 `NewBuilder()` 蜕化成例那样呢？
+试想，这时候在新增冰箱和饮料两个属性，且这两个属性是可选的，配套的。那么怎么创建 `house` 和 `car` 呢？
 
 同样的道理，将可选项赋值给 `Builder` 中的属性。代码如下：  
 *示例 1.2*
@@ -456,10 +457,10 @@ r := f.NewBuilder().
 
 ## 2. 小结
 
-从上述分析可以做个建造者模式的小结，如下：
-1） 建造者模式是表达和实现分离，对于调用方来说不需要关注细节实现。
-2） 建造者模式其内部对象建造顺序是稳定的，实现是复杂的。摘录《设计模式之美》的一段话表明什么时候该用建造者模式：
+从上述分析可以做个建造者模式的小结：  
+1） 建造者模式是表达和实现分离，对于调用方来说不需要关注细节实现。  
+2） 建造者模式其内部对象建造顺序是稳定的，实现是复杂的。摘录《设计模式之美》的一段话表明什么时候该用建造者模式：  
 ```
-顾客走进一家餐馆点餐，我们利用工厂模式，根据顾客不同的选择，制作不同的食物，如比萨、汉堡和沙拉等。对于比萨，顾客又有各种配料可以选择，如奶酪、西红柿和培根等。我们通过建造者模式，根据顾客选择的不同配料，制作不同口味的比萨。
+顾客走进一家餐馆点餐，我们利用工厂模式，根据顾客不同的选择，制作不同的食物，如比萨、汉堡和沙拉等。对于比萨，顾客又有各种配料可以选择，如奶酪、西红柿和培根等。我们通过建造者模式，根据顾客选择的不同配料，制作不同口味的比萨。  
+```  
 3） 建造者模式建造的对象是可用的，安全的。
-```
