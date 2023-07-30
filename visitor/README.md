@@ -1,5 +1,3 @@
-[toc]
-
 # 0. 前言
 
 在阅读 `Kubernetes: kubectl` 源码时看到有关访问者设计模式的运用。访问者模式是行为型设计模式的一种，本篇文章将对访问者模式做一个介绍。
@@ -545,3 +543,18 @@ visitor.Visit(happyVisitor)
 
 这些代码了解了，再去看 `Kubernetes:kubectl` 应该不难了，代码在[这里](https://github.com/kubernetes/kubectl/blob/master/pkg/cmd/get/get.go)。
 
+# 3. 总结
+
+**优点**
+
+- 访问者模式适用于对象负责且具有较多操作的场景，使用访问者模式可解耦对象和操作，简化对象职责。
+- 访问者模式侧重在访问者，对于访问者而言，多加几个访问者操作不影响对象的实现，符合开闭原则。
+
+**缺点**
+
+- 由于访问者模式解耦了对象和它的操作，对象的属性暴露给访问者，打破了对象和操作的封装。
+- 访问者模式对对象不友好，如果对象结构不稳定，很难使用访问者模式。同时，如果要加入新对象，需要访问者接口，实现和对象都要改，不符合开闭原则。
+
+# 4. 参考文章
+[访问者模式](https://www.cnblogs.com/bytesfly/p/visitor-pattern.html)
+[GO 编程模式：K8S VISITOR 模式](https://coolshell.cn/articles/21263.html)
