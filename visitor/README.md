@@ -9,9 +9,9 @@
 
 实现程序，功能如下：
 ```
-当男人成功时，显示`我有一个好老婆`；当女人成功时，显示`我有一个有爱的丈夫`；
-当男人开心时，显示`我有一个玩具`；当女人开心时，显示`我有一个有爱的丈夫`；
-当男人伤心时，显示`我丢了玩具`；当女人伤心时，显示`我丢了有爱的丈夫`；
+当男人成功时，显示我有一个好老婆；当女人成功时，显示我有一个有爱的丈夫；
+当男人开心时，显示我有一个玩具；当女人开心时，显示我有一个有爱的丈夫；
+当男人伤心时，显示我丢了玩具；当女人伤心时，显示我丢了有爱的丈夫；
 ```
 
 基于上述描述，实现示例代码：
@@ -248,12 +248,13 @@ func main() {
 访问者模式在 GoF 合著的《设计模式：可复用面向对象软件的基础》中的定义是：
 ```
 允许一个或多个操作应用到一组对象上，解耦操作和对象本身
-Allows for one or more operation to be applied to a set of objects at runtime, decoupling the operations from the object structure
+Allows for one or more operation to be applied to a set of objects at runtime, 
+decoupling the operations from the object structure
 ```
 
 # 2. VisitorFunc 和访问者模式
 
-到这里还没完，前面介绍了访问者模式，从定义看访问者模式通过将一个或多个操作应用到一组对象上，以实现对象和操作的解耦。这里需要重点关注的点是一组对象。
+前面介绍了访问者模式，从定义看访问者模式通过将一个或多个操作应用到一组对象上，以实现对象和操作的解耦。这里需要重点关注的点是一组对象。
 
 一组意味着对象具有相似性，且结构是稳定的。试想如果男人和女人类中，女人没有伤心时的行为，那就没办法将其归为一组对象，或者需要实现 fake 伤心以保持对象的相似性。
 
@@ -511,7 +512,7 @@ visitor.Visit(happyVisitor)
 
 通过层层嵌套 `Visitor` 实现对象的嵌套操作。
 
-这些代码了解了，再去看 `Kubernetes:kubectl` 应该不难了，代码在[这里](https://github.com/kubernetes/kubectl/blob/master/pkg/cmd/get/get.go)。
+这些代码了解了，再去看 `Kubernetes:kubectl` 应该不难了，代码在 [这里](https://github.com/kubernetes/kubectl/blob/master/pkg/cmd/get/get.go)。
 
 # 3. 总结
 
@@ -526,5 +527,5 @@ visitor.Visit(happyVisitor)
 - 访问者模式对对象不友好，如果对象结构不稳定，很难使用访问者模式。同时，如果要加入新对象，需要访问者接口，实现和对象都要改，不符合开闭原则。
 
 # 4. 参考文章
-[访问者模式](https://www.cnblogs.com/bytesfly/p/visitor-pattern.html)
+[访问者模式](https://www.cnblogs.com/bytesfly/p/visitor-pattern.html)  
 [GO 编程模式：K8S VISITOR 模式](https://coolshell.cn/articles/21263.html)
