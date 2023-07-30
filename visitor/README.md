@@ -7,9 +7,12 @@
 ## 1.1 示例
 首先，给出一个比较粗糙的示例。  
 
+实现程序，功能如下：
+```
 当男人成功时，显示`我有一个好老婆`；当女人成功时，显示`我有一个有爱的丈夫`；
 当男人开心时，显示`我有一个玩具`；当女人开心时，显示`我有一个有爱的丈夫`；
 当男人伤心时，显示`我丢了玩具`；当女人伤心时，显示`我丢了有爱的丈夫`；
+```
 
 基于上述描述，实现示例代码：
 ```
@@ -58,19 +61,20 @@ func main() {
 }
 ```
 
-示例代码实现了想要的功能。我们看示例代码的实现，男人和女人类都具有 `action` 且行为不一样。
+示例代码实现了想要的功能。  
+可以看出，男人和女人类都具有 `action` 且行为不一样。
 
-那么，如果增加 `action`，比如当男人恋爱时，显示`我终于脱单了`；当女人恋爱时，显示`终于有人爱我了`；就需要更新男人和女人类的 `status` 方法，不符合开闭原则。
+那么，如果增加 `action`，比如当男人恋爱时，显示`我终于脱单了`；当女人恋爱时，显示`终于有人爱我了`；就需要更新男人和女人类的 `status` 方法，这不符合开闭原则。
 
 ## 1.2 解耦对象和行为
 
-既然不符合开闭原则，怎么样才能解耦对象和行为呢？使得行为的变化不会影响到对象实现。
+既然不符合开闭原则，那怎么样才能解耦对象和行为，使得行为的变化不会影响到对象实现呢？
 
-还是进一步看上述实现，男人和女人类是行为的主体，行为有成功时的行为，开心时的行为，伤心时的行为...
+进一步看上述实现，男人和女人类是行为的主体，行为有成功时的行为，开心时的行为，伤心时的行为...
 
 既然是解耦，那先把行为拿出来作为接口，在以具体的行为类实现接口。看看怎么把行为类和对象类分开。
 
-实现如下：
+实现代码：
 ```
 type status interface {
 	manStatus()
@@ -105,16 +109,14 @@ func (s *success) womanStatus() {
 	fmt.Println("I have a lovely husband")
 }
 
-type man struct {
-}
+type man struct {}
 
-type woman struct {
-}
+type woman struct {}
 ```
 
-这里把对象类的 `action` 属性拿掉，相应的把 `action` 转换为行为类，行为类实现了接口其中定义了 `manStatus()` 和 `womanStatus()` 方法。
+这里把对象类的 `action` 属性拿掉，相应的把 `action` 转换为行为类。行为类实现了接口，其中定义了 `manStatus()` 和 `womanStatus()` 方法。
 
-这样我们拆成了两个类，对象类和行为类。怎么把这两个类联系起来？
+这样我们拆成了两个类，对象类和行为类。怎么把这两个类联系起来呢？
 看代码，男人类和男人类的行为，女人类和女人类的行为是有联系的，初始化对象类和行为类：
 ```
 m := man{}
@@ -144,13 +146,13 @@ func main() {
 
 ## 1.3 访问者模式
 
-至此，我们已经实现了一种新的设计模式访问者模式。有人可能会问了，我怎么还是没看出来。我们在分析上述代码。
+至此，我们已经实现了访问者模式。有人可能会问了，我怎么还是没看出来？我们在分析上述代码。
 
 有两个类，对象类和行为类。  
 对象类实现 `accept` 方法，其是动作的主体，将对象类和行为类关联起来。  
-行为类根据不同对象实现行为方法，其是行为的主体，行为是建立在对象之上的，也就是对于行为类来说，行为类是主。
+行为类根据不同对象实现行为方法，其是行为的主体，行为是建立在对象之上的。
 
-基于上述分析，我们改造下代码如下：
+基于上述分析，我们继续改造代码：
 ```
 type visitor interface {
 	manStatus()
@@ -185,11 +187,9 @@ func (s *successVisitor) womanStatus() {
 	fmt.Println("I have a lovely husband")
 }
 
-type man struct {
-}
+type man struct {}
 
-type woman struct {
-}
+type woman struct {}
 
 func (m *man) accept(s visitor) {
 	s.manStatus()
@@ -200,7 +200,7 @@ func (w *woman) accept(s visitor) {
 }
 ```
 
-结构基本没变，只是重命名了一下，更容易分清主体，站在不同类上，谁是主。
+结构基本没变，只是重命名了一下，更容易分清主体。
 
 上述示例对于行为类相比于对象类是主的体验还不明显，重新改写代码：
 ```
@@ -242,7 +242,7 @@ func main() {
 
 改写后的代码，行为类会访问对象类的 `name` 属性，对于行为类来说，对象类就是数据，是属性。
 
-画出访问者设计模式的 UML 图：  
+基于此，画出访问者设计模式的 UML 图：  
 ![访问者模式](image/访问者模式.png "访问者模式")
 
 访问者模式在 GoF 合著的《设计模式：可复用面向对象软件的基础》中的定义是：
@@ -253,11 +253,11 @@ Allows for one or more operation to be applied to a set of objects at runtime, d
 
 # 2. VisitorFunc 和访问者模式
 
-前面介绍了访问者模式，从定义看出通过将一个或多个操作应用到一组对象上，以实现对象和操作的解耦。这里需要重点关注的点是一组对象。
+到这里还没完，前面介绍了访问者模式，从定义看访问者模式通过将一个或多个操作应用到一组对象上，以实现对象和操作的解耦。这里需要重点关注的点是一组对象。
 
 一组意味着对象具有相似性，且结构是稳定的。试想如果男人和女人类中，女人没有伤心时的行为，那就没办法将其归为一组对象，或者需要实现 fake 伤心以保持对象的相似性。
 
-既然定义的是一组，当然对象也可以是一个。假定对象是一个，使用函数改写上述访问者模式代码：
+既然定义的是一组，当然对象也可以是一个。假定对象是一个，使用函数 `Visitor` 改写上述访问者模式代码：
 ```
 type VisitorFunc func(man)
 
@@ -289,7 +289,7 @@ func main() {
 
 这么改写在于简单，去掉类取而代之的是函数，用函数实现了具体的 `Visitor`。当然，这样的 `Visitor` 只能处理一种操作。
 
-类似地，如果一组对象的行为是一样的，那也可以用函数 `Visitor` 来实现：
+类似地，如果一组对象的行为是一样的，也可以用函数 `Visitor` 来实现：
 ```
 type VisitorFunc func(person)
 
@@ -343,7 +343,7 @@ func main() {
 
 如果操作作用于一个对象，可以用函数 `Visitor` 来简化实现。如果多个操作嵌套的作用于对象上，那么可以使用嵌套 `Visitor` 实现，其效果类似于多个小应用访问数据库以实现某个功能。
 
-举例如下：
+代码示例如下：
 ```
 type VisitorFunc func(*man) error
 
@@ -469,41 +469,24 @@ func main() {
 	visitors := []Visitor{m1, m2, m3}
 
 	visitor = VisitorList(visitors)
-	visitor.Visit(happyVisitor)
-
-	fmt.Println("================")
-
 	visitor = validationVisitor{visitor: visitor}
-	visitor.Visit(happyVisitor)
-
-	fmt.Println("================")
 	visitor = errorVisitor{visitor: visitor}
-	visitor.Visit(happyVisitor)
-
-	fmt.Println("================")
-
 	visitor = ageVisitor{visitor: visitor}
+
 	visitor.Visit(happyVisitor)
 }
 ```
 
 代码有点长，其基本是 `Kubernetes:kubectl` 访问者模式的主体，把它看懂了，再去看 `kubectl` 的访问者模式实现就不难了。
 
-首先，对象实现了 `Visitor` (类似于上例的 accept)，接受函数 `Visitor`，函数 `Visitor` 访问对象操作：
+首先，对象实现了 `Visitor` (类似于上例的 `accept`)，接受函数 `Visitor`，函数 `Visitor` 访问对象操作：
 ```
 func (m *man) Visit(fn VisitorFunc) error {
-	fmt.Println("in man")
-
-	if err := fn(m); err != nil {
-		return err
-	}
-
-	fmt.Println("out man")
-	return nil
+	...
 }
 ```
 
-接着，将多个对象装入 `VisitorList` 中，且该 VisitorList 也实现了 `Visitor` 接口方法。这么做是为了遍历访问每个对象：
+接着，将多个对象装入 `VisitorList`，且该 `VisitorList` 也实现了 `Visitor` 接口方法。这么做是为了遍历访问每个对象：
 ```
 func (l VisitorList) Visit(fn VisitorFunc) error {
 	for i := range l {
@@ -518,20 +501,7 @@ func (l VisitorList) Visit(fn VisitorFunc) error {
 然后，是在函数 `Visitor` 操作对象之后对对象做一些其它操作，这里定义了 `validationVisitor` 用来验证对象的名字是否为空：
 ```
 func (v validationVisitor) Visit(fn VisitorFunc) error {
-	return v.visitor.Visit(func(m *man) error {
-		fmt.Println("in validation")
-
-		if m.name == "" {
-			return errors.New("empty name")
-		}
-
-		if err := fn(m); err != nil {
-			return err
-		}
-
-		fmt.Println("out validation")
-		return nil
-	})
+	...
 }
 
 // main
@@ -539,7 +509,7 @@ visitor = validationVisitor{visitor: visitor}
 visitor.Visit(happyVisitor)
 ```
 
-通过层层嵌套 `Visitor` 实现了对对象的嵌套操作。
+通过层层嵌套 `Visitor` 实现对象的嵌套操作。
 
 这些代码了解了，再去看 `Kubernetes:kubectl` 应该不难了，代码在[这里](https://github.com/kubernetes/kubectl/blob/master/pkg/cmd/get/get.go)。
 
@@ -547,7 +517,7 @@ visitor.Visit(happyVisitor)
 
 **优点**
 
-- 访问者模式适用于对象负责且具有较多操作的场景，使用访问者模式可解耦对象和操作，简化对象职责。
+- 访问者模式适用于对象复杂且具有较多操作的场景，使用访问者模式可解耦对象和操作，简化对象职责。
 - 访问者模式侧重在访问者，对于访问者而言，多加几个访问者操作不影响对象的实现，符合开闭原则。
 
 **缺点**
